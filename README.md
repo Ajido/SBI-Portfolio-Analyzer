@@ -26,7 +26,7 @@ SBIのポートフォリオページから保有銘柄の各種情報を取得�
 
 https://github.com/Ajido/SBI-Portfolio-Analyzer/releases
 
-<table><tr><td>**Windows**</td><td>SBI-Portfolio-Analyzer-win32-x64.zip</td></tr><tr><td>**Mac OS**</td><td>SBI-Portfolio-Analyzer-win32-x64.zip</td></tr></table>
+<table><tr><td><strong>Windows</strong></td><td>SBI-Portfolio-Analyzer-win32-x64.zip</td></tr><tr><td><strong>Mac OS</strong></td><td>SBI-Portfolio-Analyzer-darwin-x64.zip</td></tr></table>
 
 ## 免責事項
 
