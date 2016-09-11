@@ -65,14 +65,104 @@ const download = (portfolio) => {
   // const blob = new Blob([bom, content], { type: 'text/csv' })
 }
 
+// ポートフォリオ全体のパフォーマンス集計関数
+const aggregate = (portfolio) => {
+  const data = {
+    '評価損益プラス分積み上げ計上': (() => {
+      let sum = 0;
+      portfolio.forEach((data) => {
+        if (data['評価損益'] > 0 && isFinite(data['評価損益'])) {
+          sum += data['評価損益']
+        }
+      })
+      return sum
+    })(),
+    '評価損益マイナス分積み上げ計上': (() => {
+      let sum = 0;
+      portfolio.forEach((data) => {
+        if (data['評価損益'] < 0 && isFinite(data['評価損益'])) {
+          sum += data['評価損益']
+        }
+      })
+      return sum
+    })(),
+    '保有株配当金額総計': (() => {
+      let sum = 0;
+      portfolio.forEach((data) => {
+        if (isFinite(data['保有株配当金額'])) {
+          sum += data['保有株配当金額']
+        }
+      })
+      return sum
+    })(),
+    '保有株優待額総計': (() => {
+      let sum = 0;
+      portfolio.forEach((data) => {
+        if (isFinite(data['保有株優待額'])) {
+          sum += data['保有株優待額']
+        }
+      })
+      return sum
+    })(),
+    '評価額合計': (() => {
+      let sum = 0;
+      portfolio.forEach((data) => {
+        if (isFinite(data['名目額'])) {
+          sum += data['名目額']
+        }
+      })
+      return sum
+    })(),
+    '実質額合計': (() => {
+      let sum = 0;
+      portfolio.forEach((data) => {
+        if (isFinite(data['実質額'])) {
+          sum += data['実質額']
+        }
+      })
+      return sum
+    })()
+  }
+
+  data['名目保有株配当金利回り'] = (() => {
+    return sbiRound(data['保有株配当金額総計'] / data['評価額合計'] * 100)
+  })()
+
+  data['実質保有株配当金利回り'] = (() => {
+    return sbiRound(data['保有株配当金額総計'] / data['実質額合計'] * 100)
+  })()
+
+  data['名目保有株優待額利回り'] = (() => {
+    return sbiRound(data['保有株優待額総計'] / data['評価額合計'] * 100)
+  })()
+
+  data['実質保有株優待額利回り'] = (() => {
+    return sbiRound(data['保有株優待額総計'] / data['実質額合計'] * 100)
+  })()
+
+  data['保有株優待＋配当額総計'] = (() => {
+    return data['保有株配当金額総計'] + data['保有株優待額総計']
+  })()
+
+  data['名目保有株優待＋配当額利回り'] = (() => {
+    return sbiRound(data['保有株優待＋配当額総計'] / data['評価額合計'] * 100)
+  })()
+
+  data['実質保有株優待＋配当額利回り'] = (() => {
+    return sbiRound(data['保有株優待＋配当額総計'] / data['実質額合計'] * 100)
+  })()
+
+  console.log(data);
+}
+
 // ポートフォリオのデータを順次拡充
 const getDetails = (index) => {
   if (!index) index = 0
   const data = portfolio[index]
 
-  // すべての銘柄データを更新したらポートフォリオデータのダウンロード画面を表示する
+  // 全銘柄情報を更新したらポートフォリオ全体の集計処理を走らせてからダウンロード画面を表示
   if (!data) {
-    console.log('finished')
+    aggregate(portfolio)
     setTimeout(download, 500, portfolio)
     return
   }
@@ -98,7 +188,7 @@ const getDetails = (index) => {
 
         data['名目配当利回り'] = bonusRate;
         data['実質配当利回り'] = sbiRound(bonusRate * (data['現在値'] / data['取得単価']));
-        data['保有株配当金額'] = data['現在値'] * data['保有株数'] * bonusRate;
+        data['保有株配当金額'] = sbiRound(data['現在値'] * data['保有株数'] * (bonusRate / 100));
 
         const giftRate = sbiRound(((gift[data['銘柄コード']] || 0) / (data['現在値'] * data['保有株数'])) * 100);
 
