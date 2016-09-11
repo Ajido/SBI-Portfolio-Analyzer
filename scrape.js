@@ -52,12 +52,29 @@ for (let i = 0; i < codes.length; i++) {
   })
 }
 
+// ポートフォリオデータのダウンロード関数
+const download = (portfolio) => {
+  const blob = new Blob([JSON.stringify(portfolio)], { type: 'application/json' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.target = '_blank'
+  a.download = 'portfolio-' + Date.now() + '.json'
+  a.click()
+
+  // const bom = new Uint8Array([0xEF, 0xBB, 0xBF])
+  // const blob = new Blob([bom, content], { type: 'text/csv' })
+}
+
 // ポートフォリオのデータを順次拡充
 const getDetails = (index) => {
   if (!index) index = 0
   const data = portfolio[index]
+
+  // すべての銘柄データを更新したらポートフォリオデータのダウンロード画面を表示する
   if (!data) {
-    return console.log('finished')
+    console.log('finished')
+    setTimeout(download, 500, portfolio)
+    return
   }
 
   // 銘柄個別ページに移動
