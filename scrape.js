@@ -100,11 +100,11 @@ const getDetails = (index) => {
         data['実質配当利回り'] = sbiRound(bonusRate * (data['現在値'] / data['取得単価']));
         data['保有株配当金額'] = data['現在値'] * data['保有株数'] * bonusRate;
 
-        const giftRate = sbiRound((gift[data['銘柄コード']] / (data['現在値'] * data['保有株数'])) * 100);
+        const giftRate = sbiRound(((gift[data['銘柄コード']] || 0) / (data['現在値'] * data['保有株数'])) * 100);
 
         data['名目優待利回り'] = giftRate;
         data['実質優待利回り'] = sbiRound(giftRate * (data['現在値'] / data['取得単価']));
-        data['保有株優待額'] = gift[data['銘柄コード']];
+        data['保有株優待額'] = gift[data['銘柄コード']] || 0;
 
         data['実質配当優待利回り'] = data['実質配当利回り'] + data['実質優待利回り'];
         data['名目配当優待利回り'] = data['名目配当利回り'] + data['名目優待利回り'];
