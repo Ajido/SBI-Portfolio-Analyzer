@@ -1,0 +1,27 @@
+os: osx
+language: node_js
+node_js:
+  - '6'
+install:
+  - npm install
+script:
+  - node --version
+  - npm --version
+  - npm test
+before_deploy:
+  - brew update
+  - brew install wine
+  - wine --version
+  - npm run archive
+deploy:
+  provider: releases
+  api_key:
+    secure: qUh7QexcmAwS54zX07krkdoOge3FhYHr+GfvUQRFrL0qU7xeshPxQRmBaenftyWpS0xTRNbadX0wTg2ATlAHZPamNMuoh4v4jJ9HhXuEysd2EICQRH19wlL0EAJF0r6xvqvKcZm67mkaiEc896jlDxWjU5ZMbcPj/9ol4B9v9K4tMEVgJymrnCt2WNvhW45teoDBglORQ+fcnbWOVi1h2UduWEAP9LbdvJLZCuQg8gQqNx2CZp6umuzghZUdYCHQPshAoGfc3eWN9Ml+Pi0v9y/300QgBBAmbL1w+aTFGpryTdTu170mHBYXjkX7FgnI0z8e4KUTEqAr3CWVKnzVkkoAqF/hyWQYtFE9crjXkbGSndBhtTYJjzY1PhPT+bvUvbpr5kU2eXAK12IOuEDFieych/rafumk/u6Pc22/aqHHCLr7s+HTRQ/sjqlMsUN6cbSsfc6PO4OFIYyGlW5pWEonvtb/xo3oN2jT4OmVnI6LLXTJvYEuAZq/RmR2uXhWBP5vfqtmi0Nd+cRWZyjDMaqXvAm4QsmEfhGLK1FYODxFdOsG32OQ7v3B02bMkRSb7pjRu8DFtjE7FF/LUMMv97fWrgUm7X2xttiYjvphZaTgx+g7X7mLB2X1YtE4rnN/Pkg6/OJ7jpk8HU+88RwWjKP1mWyjzbuyOrMFAqJHbYo=
+  file:
+    - dist/SBI-Portfolio-Analyzer-darwin-x64.zip
+    - dist/SBI-Portfolio-Analyzer-win32-x64.zip
+  skip_cleanup: true
+  on:
+    repo: Ajido/SBI-Portfolio-Analyzer
+    tags: true
+    all_branches: true
