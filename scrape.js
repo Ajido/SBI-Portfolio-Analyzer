@@ -172,8 +172,8 @@ const getDetails = (index) => {
     [].forEach.call(container.querySelectorAll('table[summary="投資指標"] tr > th'), (v) => {
       const txt = v.nextElementSibling.textContent;
 
-      if (/予想EPS/.test(v.textContent)) data['PER'] = sbiRound(data['現在値'] / Number(txt));
-      if (/実績BPS/.test(v.textContent)) data['PBR'] = sbiRound(data['現在値'] / Number(txt));
+      if (/予想EPS/.test(v.textContent)) data['PER'] = sbiRound(data['現在値'] / Number(txt.replace(/,/g, '')));
+      if (/実績BPS/.test(v.textContent)) data['PBR'] = sbiRound(data['現在値'] / Number(txt.replace(/,/g, '')));
 
       if (/予想1株配当/.test(v.textContent)) {
         // 仕様: 予想配当には予想1株配当(大)を採用する（クライアント要求）
@@ -275,7 +275,7 @@ const getDetails = (index) => {
 
           [].forEach.call(finRepContainer.querySelectorAll('.shikihouBox01 > table:nth-child(2) table td.mtext[align="left"]'), (v) => {
             const key = v.textContent.trim();
-            if (/^(連|◇)/.test(key) === false) return;
+            if (/^(連|単|◇)/.test(key) === false) return;
 
             if (/予/.test(key) && !cur) cur = v;
             if (!cur) prev = v;
