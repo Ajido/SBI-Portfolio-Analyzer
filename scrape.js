@@ -221,27 +221,35 @@ const getDetails = (index) => {
           '販売先', '比較会社', '本社', '支社', '従業員', '証券', '銀行', '連結', '会社業績修正'
         ];
 
-        repContainer.querySelectorAll('.shikihouBox01 table')[0].textContent.split(/[\r\n]/).forEach((v) => {
-          if (/【([^】]+)】(.*?)$/.test(v)) {
-            if (keys.indexOf(RegExp.$1) !== -1) {
-              data['四季報'][RegExp.$1] = RegExp.$2;
-            } else {
-              if (!data['四季報']['コメント１']) {
-                data['四季報']['コメント１'] = '【' + RegExp.$1 + '】 ' + RegExp.$2;
-              } else if (!data['四季報']['コメント２']) {
-                data['四季報']['コメント２'] = '【' + RegExp.$1 + '】 ' + RegExp.$2;
+        if (repContainer.querySelectorAll('.shikihouBox01 table')[0]) {
+          repContainer.querySelectorAll('.shikihouBox01 table')[0].textContent.split(/[\r\n]/).forEach((v) => {
+            if (/【([^】]+)】(.*?)$/.test(v)) {
+              if (keys.indexOf(RegExp.$1) !== -1) {
+                data['四季報'][RegExp.$1] = RegExp.$2;
+              } else {
+                if (!data['四季報']['コメント１']) {
+                  data['四季報']['コメント１'] = '【' + RegExp.$1 + '】 ' + RegExp.$2;
+                } else if (!data['四季報']['コメント２']) {
+                  data['四季報']['コメント２'] = '【' + RegExp.$1 + '】 ' + RegExp.$2;
+                }
               }
             }
-          }
-        });
+          });
 
-        const stocks = repContainer.querySelectorAll('.shikihouBox01 > table table:nth-child(2) tr > td:nth-child(3)');
-        data['四季報']['浮動株'] = Number(stocks[0].textContent.trim().replace('%', ''));
-        data['四季報']['特定株'] = Number(stocks[1].textContent.trim().replace('%', ''));
+          const stocks = repContainer.querySelectorAll('.shikihouBox01 > table table:nth-child(2) tr > td:nth-child(3)');
+          data['四季報']['浮動株'] = Number(stocks[0].textContent.trim().replace('%', ''));
+          data['四季報']['特定株'] = Number(stocks[1].textContent.trim().replace('%', ''));
+        }
 
-        const finRepUrl = [].filter.call(repContainer.querySelectorAll('[class*="tab"] a'), (v) => {
-          return /財務状況/.test(v.textContent);
-        })[0].getAttribute('href');
+        let finRepUrl;
+
+        if (repContainer.querySelectorAll('.shikihouBox01 table')[0]) {
+          finRepUrl = [].filter.call(repContainer.querySelectorAll('[class*="tab"] a'), (v) => {
+            return /財務状況/.test(v.textContent);
+          })[0].getAttribute('href');
+        } else {
+          finRepUrl = repUrl;
+        }
 
         data['財務状況'] = {};
 
@@ -278,23 +286,25 @@ const getDetails = (index) => {
             if (!cur) prev = v;
           });
 
-          data['財務状況']['昨年度'] = {
-            '売上': Number(prev.nextElementSibling.textContent.trim().replace(/,/g, '')),
-            '営業利益': Number(prev.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
-            '経常利益': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
-            '純利益': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
-            '一株利益': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
-            '一株配当': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '').split('～').pop())
-          };
+          if (cur && prev) {
+            data['財務状況']['昨年度'] = {
+              '売上': Number(prev.nextElementSibling.textContent.trim().replace(/,/g, '')),
+              '営業利益': Number(prev.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
+              '経常利益': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
+              '純利益': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
+              '一株利益': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
+              '一株配当': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '').split('～').pop())
+            };
 
-          data['財務状況']['本年度'] = {
-            '予想売上': Number(cur.nextElementSibling.textContent.trim().replace(/,/g, '')),
-            '予想営業利益': Number(cur.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
-            '予想経常利益': Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
-            '予想純利益': Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
-            '予想一株利益':  Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
-            '予想一株配当':  Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '').split('～').pop())
-          };
+            data['財務状況']['本年度'] = {
+              '予想売上': Number(cur.nextElementSibling.textContent.trim().replace(/,/g, '')),
+              '予想営業利益': Number(cur.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
+              '予想経常利益': Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
+              '予想純利益': Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
+              '予想一株利益':  Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
+              '予想一株配当':  Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '').split('～').pop())
+            };
+          }
 
           const analyzeUrl = [].filter.call(container.querySelectorAll('[name="FormKabuka"] [class*="tab"] a'), (v) => {
             return /分析/.test(v.textContent);
