@@ -351,5 +351,65 @@ const getDetails = (index) => {
   });
 }
 
-getDetails();
+const pageing = (pageUrl) => {
+  request(pageUrl, (pageContainer) => {
+    // ポートフォリオの株式現物特定テーブルを取得
+    const tokutei = [].filter.call(pageContainer.querySelectorAll('td.mtext'), (e) => {
+      return /株式\（現物\/特定預り\）/.test(e.textContent)
+    })[0]
+
+    // ポートフォリオの株式現物NISAテーブルを取得
+    const nisa = [].filter.call(pageContainer.querySelectorAll('td.mtext'), (e) => {
+      return /株式\（現物\/NISA預り\）/.test(e.textContent)
+    })[0]
+
+    // 特定があれば特定を、なければNISAを使う
+    const table = (tokutei)
+      ? tokutei.parentNode.nextElementSibling.querySelector('table')
+      : nisa.parentNode.nextElementSibling.querySelector('table')
+
+    // 保有中の銘柄コード・銘柄名・個別リンクを取得
+    const codes = getColumns(table, '銘柄（コード）').map((e) => {
+      if (/^([0-9]+)\s?(.*?)$/.test(e.textContent)) {
+        return { code: RegExp.$1, name: RegExp.$2, URL: e.querySelector('a').getAttribute('href') };
+      }
+    }).filter((e) => (e))
+
+    // 保有銘柄の数量・取得単価・現在値を取得
+    const nums = convColumnsToNumArray(getColumns(table, /^数量$/))
+    const costs = convColumnsToNumArray(getColumns(table, /^(参考単価|取得単価)$/))
+    const nowcosts = convColumnsToNumArray(getColumns(table, /^現在値$/))
+
+    // ポートフォリオの基礎データ構築
+    for (let i = 0; i < codes.length; i++) {
+      portfolio.push({
+        '銘柄コード': codes[i].code,
+        '銘柄名': codes[i].name,
+        'URL': codes[i].URL,
+        '保有株数': nums[i],
+        '取得単価': costs[i],
+        '現在値': nowcosts[i],
+        '評価損益': (nums[i] * nowcosts[i]) - (nums[i] * costs[i]),
+        '実質額': nums[i] * costs[i],
+        '名目額': nums[i] * nowcosts[i]
+      })
+    }
+
+    const pages = [].filter.call(pageContainer.querySelectorAll('td.mtext > a'), (v) => /次へ→/.test(v.textContent));
+    if (pages.length > 0) {
+      pageing(pages[0].getAttribute('href'))
+    } else {
+      getDetails();
+    }
+  })
+}
+
+const pages = [].filter.call(document.querySelectorAll('td.mtext > a'), (v) => /次へ→/.test(v.textContent));
+if (pages.length > 0) {
+  pageing(pages[0].href)
+} else {
+  getDetails();
+}
+
+
 }
