@@ -176,19 +176,16 @@ const getDetails = (index) => {
       if (/実績BPS/.test(v.textContent)) data['PBR'] = sbiRound(data['現在値'] / Number(txt.replace(/,/g, '')));
 
       if (/予想1株配当/.test(v.textContent)) {
-        // 仕様: 予想配当には予想1株配当(大)を採用する（クライアント要求）
-        data['予想配当'] = parseInt(txt, 10);
-        if (/～/.test(txt)) data['予想配当'] = parseInt(txt.split('～').pop(), 10);
+        data['予想配当'] = parseInt(txt.replace(/,/g, ''), 10);
+        if (/～/.test(txt)) data['予想配当'] = parseInt(txt.split('～').shift().replace(/,/g, ''), 10);
 
-        // 仕様: 名目配当利回りには予想1株配当(小)を採用する（SBI基準）
-        data['名目配当利回り'] = (data['予想配当'] / data['現在値']) * 100;
-        if (/～/.test(txt)) data['名目配当利回り'] = (parseInt(txt.split('～').shift(), 10) / data['現在値']) * 100;
+        data['名目配当利回り'] = sbiRound((data['予想配当'] / data['現在値']) * 100);
 
-        const bonusRate = sbiRound(data['名目配当利回り']);
+        const bonusRate = data['名目配当利回り'];
 
         data['名目配当利回り'] = bonusRate;
         data['実質配当利回り'] = sbiRound(bonusRate * (data['現在値'] / data['取得単価']));
-        data['保有株配当金額'] = sbiRound(data['現在値'] * data['保有株数'] * (bonusRate / 100));
+        data['保有株配当金額'] = data['予想配当'] * data['保有株数'];
 
         const giftRate = sbiRound(((gift[data['銘柄コード']] || 0) / (data['現在値'] * data['保有株数'])) * 100);
 
