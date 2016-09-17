@@ -34,6 +34,9 @@ app.on('ready', () => {
     const lib = path.resolve(path.join(__dirname, 'lib/extension.js'))
     window.webContents.executeJavaScript(fs.readFileSync(lib, { encoding: 'utf8' }))
 
+    const jszip = path.resolve(path.join(__dirname, 'lib/jszip.min.js'))
+    window.webContents.executeJavaScript(fs.readFileSync(jszip, { encoding: 'utf8' }))
+
     const scrape = path.resolve(path.join(__dirname, 'scrape.js'))
     window.webContents.executeJavaScript(fs.readFileSync(scrape, { encoding: 'utf8' }))
   })
