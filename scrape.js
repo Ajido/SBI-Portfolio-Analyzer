@@ -6,7 +6,7 @@ if (!signed) {
   console.log(new Date(), 'Waiting for the signin')
 } else {
 
-const gift = { '2193': 7000 };
+const gift = {};
 
 // ポートフォリオの株式現物特定テーブルを取得
 const tokutei = [].filter.call(document.querySelectorAll('td.mtext'), (e) => {
@@ -57,7 +57,7 @@ const download = (portfolio, summary) => {
   const zip = new JSZip();
 
   // 基礎データのJSONファイルを保存
-  zip.file(`data-${YYYYMMDD()}.json`, JSON.stringify({ portfolio, summary }));
+  zip.file(`data-${YYYYMMDD()}.json`, JSON.stringify({ portfolio, summary, gift }));
 
   // 集計データのテキストファイルを保存
   zip.file(`performance-${YYYYMMDD()}.txt`, (() => {
@@ -627,12 +627,61 @@ const pageing = (pageUrl) => {
   })
 }
 
-const pages = [].filter.call(document.querySelectorAll('td.mtext > a'), (v) => /次へ→/.test(v.textContent));
-if (pages.length > 0) {
-  pageing(pages[0].href)
-} else {
-  getDetails();
-}
+const main = () => {
+  const pages = [].filter.call(document.querySelectorAll('td.mtext > a'), (v) => /次へ→/.test(v.textContent));
+  if (pages.length > 0) {
+    pageing(pages[0].href)
+  } else {
+    getDetails();
+  }
+};
 
+const {dialog} = require('electron').remote;
+const fs = require('fs');
+
+alert('優待価格のリストファイルを選択します');
+
+dialog.showOpenDialog({
+  properties: ['openFile'],
+  filters: [
+    { name: 'CSV', extensions: ['csv'] },
+    { name: 'Text File', extensions: ['txt'] },
+    { name: 'JSON File', extensions: ['json'] }
+  ]
+}, (files) => {
+  if (Array.isArray(files) && files.length === 1) {
+    const file =  files[0];
+
+    fs.readFile(file, 'utf8', (err, data) => {
+      if (/\.json$/.test(file)) {
+        try {
+          const json = JSON.parse(data.trim());
+          Object.keys(json).forEach((key) => {
+            gift[String(key)] = Number(json[key]);
+          });
+        } catch (e) {
+          alert('優待価格リストの書式が間違っています');
+        }
+      } else {
+        data.split(/[\r\n]+/).forEach((line) => {
+          if (/^([0-9]+).*?([0-9]+)/.test(line.trim())) {
+            gift[String(RegExp.$1)] = Number(RegExp.$2);
+          }
+        });
+      }
+
+      console.log(gift);
+      return main();
+    });
+  } else {
+    dialog.showMessageBox({
+      type: 'warning',
+      message: '優待価格リストの設定を行わずに集計を開始します',
+      buttons: ['OK']
+    }, () => {
+      return main();
+    });
+  }
+});
 
 }

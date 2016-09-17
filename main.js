@@ -17,7 +17,7 @@ app.on('ready', () => {
     height: 600,
     webPreferences: {
       webSecurity: false,
-      nodeIntegration: false
+      nodeIntegration: true
     }
   })
 
