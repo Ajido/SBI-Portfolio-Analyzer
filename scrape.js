@@ -518,7 +518,7 @@ const getDetails = (index) => {
               '経常利益': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
               '純利益': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
               '一株利益': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
-              '一株配当': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '').split('～').pop())
+              '一株配当': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '').replace(/[特記]/g, '').split('～').pop())
             };
 
             data['財務状況']['本年度'] = {
@@ -527,7 +527,7 @@ const getDetails = (index) => {
               '予想経常利益': Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
               '予想純利益': Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
               '予想一株利益':  Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
-              '予想一株配当':  Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '').split('～').pop())
+              '予想一株配当':  Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '').replace(/[特記]/g, '').split('～').pop())
             };
           }
 
