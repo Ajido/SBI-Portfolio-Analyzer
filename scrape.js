@@ -446,6 +446,8 @@ const getDetails = (index) => {
             if (/【([^】]+)】(.*?)$/.test(v)) {
               if (keys.indexOf(RegExp.$1) !== -1) {
                 data['四季報'][RegExp.$1] = RegExp.$2;
+              } else if (RegExp.$1 === '四半期進捗率' && !data['四季報']['会社業績修正']) {
+                data['四季報']['会社業績修正'] = RegExp.$2;
               } else {
                 if (!data['四季報']['コメント１']) {
                   data['四季報']['コメント１'] = '【' + RegExp.$1 + '】 ' + RegExp.$2;
