@@ -487,7 +487,7 @@ const getDetails = (index) => {
 
             if (keys.indexOf(key) !== -1) {
               if (key === '時価総額') {
-                data['財務状況'][key] = v.nextElementSibling.textContent.trim();
+                data['財務状況'][key] = v.nextElementSibling.textContent.trim().replace(/\[[0-9]+\]$/, '');
               } else {
                 data['財務状況'][key] = Number(v.nextElementSibling.textContent.trim().replace(/[%,]/g, ''));
               }
