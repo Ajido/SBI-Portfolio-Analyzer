@@ -502,7 +502,7 @@ const getDetails = (index) => {
 
           [].forEach.call(finRepContainer.querySelectorAll('.shikihouBox01 > table:nth-child(2) table td.mtext[align="left"]'), (v) => {
             const key = v.textContent.trim();
-            if (/^(連|単|◇)/.test(key) === false) return;
+            if (/^(連|単|◇|◎)/.test(key) === false) return;
 
             if (/予/.test(key) && !cur) cur = v;
             if (!cur) prev = v;
