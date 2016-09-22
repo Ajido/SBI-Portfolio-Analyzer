@@ -432,19 +432,27 @@ const getDetails = (index) => {
       ];
 
       if (repContainer.querySelectorAll('.shikihouBox01 table')[0]) {
+        let ptr;
         repContainer.querySelectorAll('.shikihouBox01 table')[0].textContent.split(/[\r\n]/).forEach((v) => {
           if (/【([^】]+)】(.*?)$/.test(v)) {
             if (keys.indexOf(RegExp.$1) !== -1) {
               data['四季報'][RegExp.$1] = RegExp.$2;
+              ptr = RegExp.$1;
             } else if (RegExp.$1 === '四半期進捗率' && !data['四季報']['会社業績修正']) {
               data['四季報']['会社業績修正'] = RegExp.$2;
+              ptr = '会社業績修正';
             } else {
               if (!data['四季報']['コメント１']) {
                 data['四季報']['コメント１'] = '【' + RegExp.$1 + '】 ' + RegExp.$2;
+                ptr = 'コメント１';
               } else if (!data['四季報']['コメント２']) {
                 data['四季報']['コメント２'] = '【' + RegExp.$1 + '】 ' + RegExp.$2;
+                ptr = 'コメント２';
               }
             }
+          } else {
+            if (ptr && v.trim())
+            data['四季報'][ptr] += ' ' + v.trim();
           }
         });
 
