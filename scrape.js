@@ -385,6 +385,8 @@ const getDetails = (index) => {
     return
   }
 
+  console.log(`${data['銘柄名']} (${data['銘柄コード']}) の銘柄情報を取得中`);
+
   // 銘柄個別ページに移動
   request(data.URL, (container) => {
     [].forEach.call(container.querySelectorAll('table[summary="投資指標"] tr > th'), (v) => {
