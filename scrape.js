@@ -559,7 +559,10 @@ const getDetails = (index) => {
               });
 
               console.log(data);
-              getDetails(index + 1);
+
+              setTimeout(() => {
+                return getDetails(index + 1);
+              }, 600);
             }
           }
 
