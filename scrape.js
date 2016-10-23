@@ -413,8 +413,8 @@ const getDetails = (index) => {
         data['実質優待利回り'] = sbiRound(giftRate * (data['現在値'] / data['取得単価']));
         data['保有株優待額'] = gift[data['銘柄コード']] || 0;
 
-        data['実質配当優待利回り'] = data['実質配当利回り'] + data['実質優待利回り'];
-        data['名目配当優待利回り'] = data['名目配当利回り'] + data['名目優待利回り'];
+        data['実質配当優待利回り'] = sbiRound(data['実質配当利回り'] + data['実質優待利回り']);
+        data['名目配当優待利回り'] = sbiRound(data['名目配当利回り'] + data['名目優待利回り']);
       }
     });
 
