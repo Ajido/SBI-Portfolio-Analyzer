@@ -394,11 +394,12 @@ const getDetails = (index) => {
     [].forEach.call(container.querySelectorAll('table[summary="投資指標"] tr > th'), (v) => {
       const txt = v.nextElementSibling.textContent;
 
-      if (/予想EPS/.test(v.textContent)) data['PER'] = sbiRound(data['現在値'] / Number(txt.replace(/,/g, '')));
-      if (/実績BPS/.test(v.textContent)) data['PBR'] = sbiRound(data['現在値'] / Number(txt.replace(/,/g, '')));
+      if (/予想EPS/.test(v.textContent)) {
+        data['PER'] = sbiRound(data['現在値'] / Number(txt.replace(/,/g, '')));
+      }
 
-      if (isFinite(data['PER']) && isFinite(data['PBR'])) {
-        data['PERxPBR'] = sbiRound(data['PER'] * data['PBR']);
+      if (/実績BPS/.test(v.textContent)) {
+        data['PBR'] = sbiRound(data['現在値'] / Number(txt.replace(/,/g, '')));
       }
 
       if (/予想1株配当/.test(v.textContent)) {
@@ -423,6 +424,15 @@ const getDetails = (index) => {
         data['名目配当優待利回り'] = sbiRound(data['名目配当利回り'] + data['名目優待利回り']);
       }
     });
+
+    if (!isFinite(data['PER'])) data['PER'] = '-';
+    if (!isFinite(data['PBR'])) data['PBR'] = '-';
+
+    if (isFinite(data['PER']) && isFinite(data['PBR'])) {
+      data['PERxPBR'] = sbiRound(data['PER'] * data['PBR']);
+    } else {
+      data['PERxPBR'] = '-';
+    }
 
     const repUrl = [].filter.call(container.querySelectorAll('[name="FormKabuka"] [class*="tab"] a'), (v) => {
       return /四季報/.test(v.textContent);
