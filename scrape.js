@@ -447,6 +447,9 @@ const getDetails = (index) => {
             } else if (RegExp.$1 === '四半期進捗率' && !data['四季報']['会社業績修正']) {
               data['四季報']['会社業績修正'] = RegExp.$2;
               ptr = '会社業績修正';
+            } else if (RegExp.$1 === '単独事業' && !data['四季報']['連結事業']) {
+              data['四季報']['連結事業'] = RegExp.$2;
+              ptr = '連結事業';
             } else {
               if (!data['四季報']['コメント１']) {
                 data['四季報']['コメント１'] = '【' + RegExp.$1 + '】 ' + RegExp.$2;
