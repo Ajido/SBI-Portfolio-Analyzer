@@ -135,6 +135,7 @@ const download = (portfolio, summary) => {
       '保有株優待額',
       'PER',
       'PBR',
+      'PERxPBR',
       '予想配当',
       'URL',
       '決算',
@@ -210,6 +211,7 @@ const download = (portfolio, summary) => {
         data['保有株優待額'],
         data['PER'],
         data['PBR'],
+        data['PERxPBR'],
         data['予想配当'],
         data['四季報']['ＵＲＬ'],
         data['四季報']['決算'],
@@ -394,6 +396,10 @@ const getDetails = (index) => {
 
       if (/予想EPS/.test(v.textContent)) data['PER'] = sbiRound(data['現在値'] / Number(txt.replace(/,/g, '')));
       if (/実績BPS/.test(v.textContent)) data['PBR'] = sbiRound(data['現在値'] / Number(txt.replace(/,/g, '')));
+
+      if (isFinite(data['PER']) && isFinite(data['PBR'])) {
+        data['PERxPBR'] = sbiRound(data['PER'] * data['PBR']);
+      }
 
       if (/予想1株配当/.test(v.textContent)) {
         data['予想配当'] = parseInt(txt.replace(/,/g, ''), 10);
