@@ -162,6 +162,7 @@ const download = (portfolio, summary) => {
       '時価総額',
       '営業CF',
       '投資CF',
+      '営+投CF',
       '財務CF',
       '現金等',
       'ROE',
@@ -238,6 +239,7 @@ const download = (portfolio, summary) => {
         data['財務状況']['時価総額'],
         data['財務状況']['営業CF'],
         data['財務状況']['投資CF'],
+        data['財務状況']['営+投CF'],
         data['財務状況']['財務CF'],
         data['財務状況']['現金等'],
         data['財務状況']['ROE'],
@@ -521,6 +523,12 @@ const getDetails = (index) => {
             data['財務状況']['予' + key] = Number(v.nextElementSibling.nextElementSibling.textContent.trim().replace(/[予%]/g, ''));
           }
         });
+
+        if (isFinite(data['財務状況']['営業CF']) && isFinite(data['財務状況']['投資CF'])) {
+          data['財務状況']['営+投CF'] = sbiRound(data['財務状況']['営業CF'] + data['財務状況']['投資CF']);
+        } else {
+          data['財務状況']['営+投CF'] = '-';
+        }
 
         let cur, prev;
 
