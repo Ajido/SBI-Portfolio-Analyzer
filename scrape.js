@@ -155,7 +155,7 @@ const download = (portfolio, summary) => {
       '証券',
       '銀行',
       '連結',
-      '会社業績修正',
+      '業績',
       '浮動株',
       '特定株',
       '四季報URL',
@@ -231,7 +231,7 @@ const download = (portfolio, summary) => {
         data['四季報']['証券'],
         data['四季報']['銀行'],
         data['四季報']['連結'],
-        data['四季報']['会社業績修正'],
+        data['四季報']['業績'],
         data['四季報']['浮動株'],
         data['四季報']['特定株'],
         data['四季報']['四季報リンク'],
@@ -434,7 +434,7 @@ const getDetails = (index) => {
     request(repUrl, (repContainer) => {
       const keys = [
         'ＵＲＬ', '決算', '設立', '上場', '特色', '連結事業', '業種', '仕入先',
-        '販売先', '比較会社', '本社', '支社', '従業員', '証券', '銀行', '連結', '会社業績修正'
+        '販売先', '比較会社', '本社', '支社', '従業員', '証券', '銀行', '連結', '業績'
       ];
 
       if (repContainer.querySelectorAll('.shikihouBox01 table')[0]) {
@@ -444,9 +444,9 @@ const getDetails = (index) => {
             if (keys.indexOf(RegExp.$1) !== -1) {
               data['四季報'][RegExp.$1] = RegExp.$2;
               ptr = RegExp.$1;
-            } else if (RegExp.$1 === '四半期進捗率' && !data['四季報']['会社業績修正']) {
-              data['四季報']['会社業績修正'] = RegExp.$2;
-              ptr = '会社業績修正';
+            } else if (RegExp.$1 === '四半期進捗率' || RegExp.$1 === '会社業績修正') {
+              data['四季報']['業績'] = RegExp.$2;
+              ptr = '業績';
             } else if (RegExp.$1 === '単独事業' && !data['四季報']['連結事業']) {
               data['四季報']['連結事業'] = RegExp.$2;
               ptr = '連結事業';
