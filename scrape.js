@@ -468,6 +468,9 @@ const getDetails = (index) => {
         const stocks = repContainer.querySelectorAll('.shikihouBox01 > table table:nth-child(2) tr > td:nth-child(3)');
         data['四季報']['浮動株'] = Number(stocks[0].textContent.trim().replace('%', ''));
         data['四季報']['特定株'] = Number(stocks[1].textContent.trim().replace('%', ''));
+
+        if (isNaN(data['四季報']['浮動株'])) data['四季報']['浮動株'] = 0;
+        if (isNaN(data['四季報']['特定株'])) data['四季報']['特定株'] = 0;
       }
 
       let finRepUrl;
