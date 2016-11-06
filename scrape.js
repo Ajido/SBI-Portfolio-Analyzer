@@ -481,6 +481,17 @@ const getDetails = (index) => {
           }
         });
 
+        if (data['四季報']['業種']) {
+          const d = repContainer.querySelectorAll('.shikihouBox01 table > tbody > tr > td.mtext');
+          if (d && d[1]) {
+            const t = (d[1].textContent || '').replace(/[\r\n]+/g, '');
+            const k = /\［([^\］]+)\］/.test(t) && RegExp.$1 || '';
+            if (k) {
+              data['四季報']['業種'] = '[' + k + '] ' + data['四季報']['業種'];
+            }
+          }
+        }
+
         const stocks = repContainer.querySelectorAll('.shikihouBox01 > table table:nth-child(2) tr > td:nth-child(3)');
         data['四季報']['浮動株'] = Number(stocks[0].textContent.trim().replace('%', ''));
         data['四季報']['特定株'] = Number(stocks[1].textContent.trim().replace('%', ''));
