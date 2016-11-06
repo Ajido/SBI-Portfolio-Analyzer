@@ -178,12 +178,14 @@ const download = (portfolio, summary) => {
       '純利益',
       '一株利益',
       '一株配当',
+      '売上営業利益率',
       '予想売上',
       '予想営業利益',
       '予想経常利益',
       '予想純利益',
       '予想一株利益',
       '予想一株配当',
+      '予想売上営業利益率',
       '成長性',
       '割安性',
       '企業規模',
@@ -255,12 +257,14 @@ const download = (portfolio, summary) => {
         data['財務状況']['昨年度']['純利益'],
         data['財務状況']['昨年度']['一株利益'],
         data['財務状況']['昨年度']['一株配当'],
+        data['財務状況']['昨年度']['売上営業利益率'],
         data['財務状況']['本年度']['予想売上'],
         data['財務状況']['本年度']['予想営業利益'],
         data['財務状況']['本年度']['予想経常利益'],
         data['財務状況']['本年度']['予想純利益'],
         data['財務状況']['本年度']['予想一株利益'],
         data['財務状況']['本年度']['予想一株配当'],
+        data['財務状況']['本年度']['予想売上営業利益率'],
         data['分析']['成長性'],
         data['分析']['割安性'],
         data['分析']['企業規模'],
@@ -553,6 +557,12 @@ const getDetails = (index) => {
             '一株配当': Number(prev.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '').replace(/[*特記]/g, '').split('～').pop())
           };
 
+          if (isFinite(data['財務状況']['昨年度']['営業利益']) && isFinite(data['財務状況']['昨年度']['売上'])) {
+            data['財務状況']['昨年度']['売上営業利益率'] = sbiRound(data['財務状況']['昨年度']['営業利益'] / data['財務状況']['昨年度']['売上'] * 100);
+          } else {
+            data['財務状況']['昨年度']['売上営業利益率'] = '-';
+          }
+
           data['財務状況']['本年度'] = {
             '予想売上': Number(cur.nextElementSibling.textContent.trim().replace(/,/g, '')),
             '予想営業利益': Number(cur.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
@@ -561,6 +571,12 @@ const getDetails = (index) => {
             '予想一株利益':  Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '')),
             '予想一株配当':  Number(cur.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling.textContent.trim().replace(/,/g, '').replace(/[*特記]/g, '').split('～').pop())
           };
+
+          if (isFinite(data['財務状況']['本年度']['予想営業利益']) && isFinite(data['財務状況']['本年度']['予想売上'])) {
+            data['財務状況']['本年度']['予想売上営業利益率'] = sbiRound(data['財務状況']['本年度']['予想営業利益'] / data['財務状況']['本年度']['予想売上'] * 100);
+          } else {
+            data['財務状況']['本年度']['予想売上営業利益率'] = '-';
+          }
         }
 
         const analyzeUrl = [].filter.call(container.querySelectorAll('[name="FormKabuka"] [class*="tab"] a'), (v) => {
