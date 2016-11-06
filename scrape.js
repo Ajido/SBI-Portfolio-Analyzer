@@ -501,6 +501,10 @@ const getDetails = (index) => {
             } else {
               data['財務状況'][key] = Number(v.nextElementSibling.textContent.trim().replace(/[%,]/g, ''));
             }
+          } else {
+            if (/^時価総額\s+([0-9,].*?)$/.test(key) && !data['財務状況']['時価総額']) {
+              data['財務状況']['時価総額'] = String(RegExp.$1).replace(/\[[0-9]+\]$/, '');
+            }
           }
 
           if (key === 'ROA' || key === 'ROE') {
