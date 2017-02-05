@@ -13,5 +13,9 @@
     "archive:osx": "npm run build:osx && cd dist && zip -r SBI-Portfolio-Analyzer-darwin-x64.zip SBI-Portfolio-Analyzer-darwin-x64",
     "archive:win": "npm run build:win && cd dist && zip -r SBI-Portfolio-Analyzer-win32-x64.zip SBI-Portfolio-Analyzer-win32-x64",
     "archive": "npm run archive:osx && npm run archive:win"
+  },
+  "dependencies": {
+    "commander": "^2.9.0",
+    "iconv-lite": "^0.4.15"
   }
 }
