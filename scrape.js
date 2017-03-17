@@ -188,6 +188,10 @@ const download = (portfolio, summary) => {
       '予想一株配当',
       '予想売上営業利益率',
       '予想配当性向',
+      '優待情報更新日',
+      '優待権利確定日',
+      '優待権利付最終日',
+      '優待リンク',
       '成長性',
       '割安性',
       '企業規模',
@@ -269,6 +273,10 @@ const download = (portfolio, summary) => {
         data['財務状況']['本年度']['予想一株配当'],
         data['財務状況']['本年度']['予想売上営業利益率'],
         data['財務状況']['本年度']['予想配当性向'],
+        data['株主優待']['更新日'],
+        data['株主優待']['権利確定月'],
+        data['株主優待']['権利付最終日'],
+        data['株主優待']['URL'],
         data['分析']['成長性'],
         data['分析']['割安性'],
         data['分析']['企業規模'],
@@ -606,50 +614,67 @@ const getDetails = (index) => {
           }
         }
 
-        const analyzeUrl = [].filter.call(container.querySelectorAll('[name="FormKabuka"] [class*="tab"] a'), (v) => {
-          return /分析/.test(v.textContent);
+        const bonusUrl = [].filter.call(container.querySelectorAll('[name="FormKabuka"] [class*="tab"] a'), (v) => {
+          return /株主優待/.test(v.textContent);
         })[0].getAttribute('href');
 
-        data['分析'] = {};
+        data['株主優待'] = {};
 
-        // 分析ページに移動
-        request(analyzeUrl, (analyzeContainer) => {
-          const formDataOrigin = new FormData(analyzeContainer.querySelectorAll('form[name="formSwitch"]')[0]);
-          const formData = new URLSearchParams();
+        // 株主優待ページに移動
+        request(bonusUrl, (bonusContainer) => {
+          const bonusTable = [].map.call(bonusContainer.querySelectorAll('.tbl690 td'), (v) => {
+            return v.textContent.trim();
+          });
 
-          for (const key of formDataOrigin.keys()) {
-            formData.append(key, formDataOrigin.get(key));
-          }
+          data['株主優待']['更新日'] = (bonusTable[0] || '').trim() || 'なし';
+          data['株主優待']['権利確定月'] = (bonusTable[1] || '').trim() || 'なし';
+          data['株主優待']['権利付最終日'] = (bonusTable[2] || '').trim() || 'なし';
+          data['株主優待']['URL'] = (bonusTable[3] || '').trim() || 'なし';
 
-          const xhr = new XMLHttpRequest();
+          const analyzeUrl = [].filter.call(container.querySelectorAll('[name="FormKabuka"] [class*="tab"] a'), (v) => {
+            return /分析/.test(v.textContent);
+          })[0].getAttribute('href');
 
-          xhr.onreadystatechange = () => {
-            if (xhr.readyState === 4) {
-              const container = document.implementation.createHTMLDocument().documentElement;
-              container.innerHTML = xhr.responseText;
+          data['分析'] = {};
 
-              const keys = ['成長性', '割安性', '企業規模', 'テクニカル', '財務健全性', '市場トレンド'];
-              [].forEach.call(container.querySelectorAll('table[summary="ランク"] tr > th'), (v) => {
-                if (keys.indexOf(v.textContent.trim()) !== -1) {
-                  data['分析'][v.textContent.trim()] = Number(v.nextElementSibling.nextElementSibling.textContent.trim());
-                }
-              });
+          // 分析ページに移動
+          request(analyzeUrl, (analyzeContainer) => {
+            const formDataOrigin = new FormData(analyzeContainer.querySelectorAll('form[name="formSwitch"]')[0]);
+            const formData = new URLSearchParams();
 
-              console.log(data);
-
-              setTimeout(() => {
-                return getDetails(index + 1);
-              }, 600);
+            for (const key of formDataOrigin.keys()) {
+              formData.append(key, formDataOrigin.get(key));
             }
-          }
 
-          xhr.open('POST', 'https://www.kabumap.com/servlets/Query');
-          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-          xhr.send(formData.toString().replace(/%20/g, '+'));
+            const xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = () => {
+              if (xhr.readyState === 4) {
+                const container = document.implementation.createHTMLDocument().documentElement;
+                container.innerHTML = xhr.responseText;
+
+                const keys = ['成長性', '割安性', '企業規模', 'テクニカル', '財務健全性', '市場トレンド'];
+                [].forEach.call(container.querySelectorAll('table[summary="ランク"] tr > th'), (v) => {
+                  if (keys.indexOf(v.textContent.trim()) !== -1) {
+                    data['分析'][v.textContent.trim()] = Number(v.nextElementSibling.nextElementSibling.textContent.trim());
+                  }
+                });
+
+                console.log(data);
+
+                setTimeout(() => {
+                  return getDetails(index + 1);
+                }, 600);
+              }
+            }
+
+            xhr.open('POST', 'https://www.kabumap.com/servlets/Query');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send(formData.toString().replace(/%20/g, '+'));
+          });
         });
       });
     });
-
   });
 }
 
