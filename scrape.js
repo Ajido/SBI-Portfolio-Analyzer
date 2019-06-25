@@ -191,6 +191,7 @@ const download = (portfolio, summary) => {
       '優待情報更新日',
       '優待権利確定日',
       '優待権利付最終日',
+      '優待詳細',
       '優待リンク',
       '成長性',
       '割安性',
@@ -276,6 +277,7 @@ const download = (portfolio, summary) => {
         data['株主優待']['更新日'],
         data['株主優待']['権利確定月'],
         data['株主優待']['権利付最終日'],
+        data['株主優待']['詳細'],
         data['株主優待']['URL'],
         data['分析']['成長性'],
         data['分析']['割安性'],
@@ -285,7 +287,7 @@ const download = (portfolio, summary) => {
         data['分析']['市場トレンド']
       ].map((v) => {
         const value = String(v).replace(/"/g, '').replace('undefined', '');
-        return (value.indexOf(',') !== -1) ? `"${value}"` : value;
+        return (value.indexOf(',') !== -1 || /[\r\n]+/.test(value)) ? `"${value}"` : value;
       }).join(',') + '\r\n';
     });
 
@@ -630,6 +632,14 @@ const getDetails = (index) => {
           data['株主優待']['権利確定月'] = (bonusTable[1] || '').trim() || 'なし';
           data['株主優待']['権利付最終日'] = (bonusTable[2] || '').trim() || 'なし';
           data['株主優待']['URL'] = (bonusTable[3] || '').trim() || 'なし';
+
+          const bonusDetail = bonusContainer.querySelector('.mgt15.accTbl01 ~ .mgt10').textContent.trim()
+            .replace(/[\t 　]/g, ' ')
+            .split(/[\r\n]/)
+            .filter((v) => v.trim())
+            .join('\n')
+
+          data['株主優待']['詳細'] = bonusDetail.trim() || 'なし';
 
           const analyzeUrl = [].filter.call(container.querySelectorAll('[name="FormKabuka"] [class*="tab"] a'), (v) => {
             return /分析/.test(v.textContent);
